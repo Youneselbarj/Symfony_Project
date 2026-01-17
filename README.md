@@ -92,7 +92,7 @@ Ces diagrammes permettent de mieux comprendre le fonctionnement global de l’ap
 ##  Installation du projet (local)
 
 ```bash
-git clone https://github.com/your-username/mini-siem-symfony.git
+git clone https://github.com/Youneselbarj/Symfony_Project.git
 composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
