@@ -1,0 +1,333 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View Log #{{ log.id }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .log-view-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .log-header {
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .log-header h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .log-id-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.875rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+
+    .log-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .log-card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .log-card-header h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #334155;
+        margin: 0;
+    }
+
+    .log-details-grid {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .log-detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.25rem;
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        border-left: 4px solid #cbd5e1;
+        transition: all 0.2s ease;
+    }
+
+    .log-detail-item:hover {
+        background: #f1f5f9;
+        border-left-color: #667eea;
+        transform: translateX(4px);
+    }
+
+    .log-detail-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+
+    .log-detail-value {
+        font-size: 0.9375rem;
+        color: #1e293b;
+        word-break: break-word;
+        font-weight: 500;
+    }
+
+    .log-detail-value code {
+        background: #e2e8f0;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-family: 'Monaco', 'Menlo', monospace;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .status-success { background: #dcfce7; color: #166534; }
+    .status-warning { background: #fef3c7; color: #92400e; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .status-info { background: #dbeafe; color: #1e40af; }
+
+    .severity-badge {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    .severity-low { background: #d1fae5; color: #065f46; }
+    .severity-medium { background: #fed7aa; color: #9a3412; }
+    .severity-high { background: #fecaca; color: #991b1b; }
+    .severity-critical { background: #e0e7ff; color: #3730a3; }
+
+    .method-badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        border-radius: 0.25rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        font-family: 'Monaco', 'Menlo', monospace;
+    }
+
+    .method-get { background: #dbeafe; color: #1e40af; }
+    .method-post { background: #dcfce7; color: #166534; }
+    .method-put { background: #fef3c7; color: #92400e; }
+    .method-delete { background: #fee2e2; color: #991b1b; }
+    .method-patch { background: #f3e8ff; color: #6b21a8; }
+
+    .action-buttons {
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    .message-block {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .message-block .log-detail-value {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #78350f;
+    }
+
+    @media (max-width: 768px) {
+        .log-details-grid {
+            grid-template-columns: 1fr;
+            padding: 1.5rem;
+        }
+
+        .log-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="log-view-container">
+    <div class="log-header">
+        <h1>
+            <span>Log Details</span>
+            <span class="log-id-badge">#{{ log.id }}</span>
+        </h1>
+    </div>
+
+    <div class="log-card">
+        <div class="log-card-header">
+            <h2>System Log Information</h2>
+        </div>
+
+        <div class="log-details-grid">
+            <div class="log-detail-item">
+                <span class="log-detail-label">Log ID</span>
+                <span class="log-detail-value"><code>#{{ log.id }}</code></span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Level</span>
+                <span class="log-detail-value">{{ log.level }}</span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Severity</span>
+                <span class="log-detail-value">
+                    <span class="severity-badge severity-{{ log.severity|lower }}">{{ log.severity }}</span>
+                </span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Status</span>
+                <span class="log-detail-value">
+                    <span class="status-badge status-{{ log.status|lower }}">{{ log.status }}</span>
+                </span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">IP Address</span>
+                <span class="log-detail-value"><code>{{ log.ip }}</code></span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Route</span>
+                <span class="log-detail-value"><code>{{ log.route }}</code></span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">HTTP Method</span>
+                <span class="log-detail-value">
+                    <span class="method-badge method-{{ log.method|lower }}">{{ log.method }}</span>
+                </span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Attempt Count</span>
+                <span class="log-detail-value"><strong>{{ log.attemptCount }}</strong></span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">Created At</span>
+                <span class="log-detail-value">{{ log.createdAt|date('M d, Y - H:i:s') }}</span>
+            </div>
+
+            <div class="log-detail-item">
+                <span class="log-detail-label">User Agent</span>
+                <span class="log-detail-value">{{ log.userAgent }}</span>
+            </div>
+
+            <div class="log-detail-item message-block">
+                <span class="log-detail-label">Log Message</span>
+                <span class="log-detail-value">{{ log.message }}</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ path('dashboard_index') }}" class="btn btn-secondary">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Back to Dashboard
+            </a>
+            <a href="{{ path('dashboard_edit', {'id': log.id}) }}" class="btn btn-primary">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                </svg>
+                Edit Log
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

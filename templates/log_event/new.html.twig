@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ log_event ? 'Éditer log' : 'Nouveau log' }}{% endblock %}
+
+{% block body %}
+<h1>{{ log_event ? 'Éditer log' : 'Nouveau log' }}</h1>
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button>{{ log_event ? 'Mettre à jour' : 'Créer' }}</button>
+{{ form_end(form) }}
+
+<a href="{{ path('app_log_event_index') }}">Retour à la liste</a>
+{% endblock %}

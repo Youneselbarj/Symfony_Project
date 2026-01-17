@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des logs{% endblock %}
+
+{% block body %}
+<h1>Liste des logs</h1>
+
+<form method="get">
+    <input type="text" name="search" value="{{ search }}" placeholder="Filtrer par IP ou type">
+    <button type="submit">Rechercher</button>
+</form>
+
+<a href="{{ path('app_log_event_new') }}">Créer un nouveau log</a>
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>IP</th>
+            <th>Type</th>
+            <th>Message</th>
+            <th>Créé le</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in log_events %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.eventType }}</td>
+                <td>{{ log.message }}</td>
+                <td>{{ log.createdAt ? log.createdAt|date('Y-m-d H:i') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_log_event_show', {'id': log.id}) }}">Voir</a>
+                    <a href="{{ path('app_log_event_edit', {'id': log.id}) }}">Éditer</a>
+                    <form method="post" action="{{ path('app_log_event_delete', {'id': log.id}) }}" style="display:inline" onsubmit="return confirm('Voulez-vous vraiment supprimer ce log ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ log.id) }}">
+                        <button type="submit">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6">Aucun log trouvé.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

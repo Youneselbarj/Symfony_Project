@@ -1,0 +1,16 @@
+{# ---------------------- Delete single log ---------------------- #}
+<form method="POST" action="{{ path('dashboard_delete', {'id': log.id}) }}" style="display:inline;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ log.id) }}">
+    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this log?');">
+        Delete
+    </button>
+</form>
+
+<form method="POST" action="{{ path('dashboard_delete_all') }}">
+    <button type="submit">Delete All</button>
+</form>
+
+<form method="POST" action="{{ path('dashboard_delete_older') }}">
+    <button name="type" value="10days">>10 days</button>
+    <button name="type" value="5hours">>5 hours</button>
+</form>
